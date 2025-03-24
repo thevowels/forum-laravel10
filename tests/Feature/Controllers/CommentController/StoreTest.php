@@ -5,7 +5,15 @@ namespace Tests\Feature\Controllers\CommentController;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
+
+use function Pest\Laravel\post;
 use function Pest\Laravel\actingAs;
+
+it('requires authentication', function () {
+    $post = Post::factory()->create();
+    post(route('posts.comments.store', $post), ['body' => 'This is body'])
+        ->assertRedirect(route('login'));
+});
 
 
 it('can store a comment', function () {
