@@ -12,7 +12,7 @@ use App\Http\Resources\PostResource;
 
 it('should return the correct component', function () {
     get(route('posts.index'))
-        ->assertInertia(fn (AssertableInertia $inertia) => $inertia->component('Posts/Index', true));
+        ->assertComponent('Posts/Index');
 
 });
 
