@@ -6,8 +6,10 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 
+
 use function Pest\Laravel\post;
 use function Pest\Laravel\actingAs;
+
 
 it('requires authentication', function () {
     $post = Post::factory()->create();

@@ -11,6 +11,9 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function __construct(){
+        $this->authorizeResource(Comment::class);
+    }
     public function index()
     {
         //
@@ -40,7 +43,8 @@ class CommentController extends Controller
             'post_id' => $post->id
         ]);
 
-        return to_route('posts.show', $post);
+        return to_route('posts.show', $post)
+            ->banner('Commented Successfully');
     }
 
     /**
@@ -65,13 +69,24 @@ class CommentController extends Controller
     public function update(Request $request, Comment $comment)
     {
         //
+        $data = $request->validate([
+            'body' => ['required', 'string','max:2500', 'min:5'],
+        ]);
+
+        $comment->update($data);
+
+        return to_route('posts.show', ['post' => $comment->post_id, 'page' => $request->query('page')])
+            ->banner('Comment updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
+    public function destroy(Request $request,  Comment $comment)
     {
-        //
+
+        $comment->delete();
+        return to_route('posts.show', ['post'=> $comment->post_id, 'page' => $request->query('page')])
+            ->banner('comment deleted');
     }
 }
