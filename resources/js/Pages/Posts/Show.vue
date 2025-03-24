@@ -22,5 +22,6 @@ import {computed} from "vue";
 import Container from "@/Components/Container.vue";
 const formattedDate = computed(() => formatDistance(parseISO(props.post.created_at), new Date()))
 
+
 const props = defineProps(['post']);
 </script>
