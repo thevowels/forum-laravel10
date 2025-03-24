@@ -4,7 +4,9 @@
             <h1 class="text-2xl font-bold">{{post.title}}</h1>
             <span class="text-sm text-gray-600 block mt-1">{{formattedDate}} ago by {{post.user.name}}</span>
             <article class="mt-6">
-                {{post.body}}
+                <pre class="whitespace-pre-wrap font-sans">
+                    {{post.body}}
+                </pre>
             </article>
 
         </Container>
