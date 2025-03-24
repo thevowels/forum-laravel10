@@ -1,5 +1,7 @@
 <template>
-    Hello
+    <AppLayout>
+        Hello
+    </AppLayout>
 </template>
 <script setup>
 
