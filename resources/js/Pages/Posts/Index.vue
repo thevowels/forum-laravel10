@@ -25,12 +25,11 @@ import Pagination from "@/Components/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
 import {computed} from "vue";
 import {formatDistance, parseISO} from "date-fns";
+import {relativeDate} from "@/Utilities/date.js";
 
 
 defineProps(['posts']);
 
-const formattedDate = (post) => {
-     return formatDistance(parseISO(post.created_at), new Date());
-}
+const formattedDate = (post) => relativeDate(post.created_at);
 
 </script>
