@@ -75,7 +75,7 @@ const menu = [
                                     <NavLink
                                         v-if="item.when ? item.when() : true"
                                         :href="item.url"
-                                        :active="route().current('dashboard')"
+                                        :active="route().current(item.route)"
                                     >
                                         {{item.name}}
                                     </NavLink>
