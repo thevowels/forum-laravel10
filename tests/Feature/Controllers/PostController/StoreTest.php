@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Post;
+use App\Models\Topic;
 use App\Models\User;
 
 use function Pest\Laravel\actingAs;
@@ -11,8 +12,9 @@ use function Pest\Laravel\post;
 
 
 beforeEach(function () {
-    $this->validData = [
+    $this->validData = fn () =>  [
         'title' => 'Hello World to the manually creating text',
+        'topic_id' => Topic::factory()->create()->getKey(),
         'body' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     ];
 });
@@ -25,11 +27,13 @@ it('requires authentication', function () {
 
 it('can store a post', function () {
     $user = User::factory()->create();
+
+    $data = value($this->validData);
     actingAs($user)
-        ->post(route('posts.store'), $this->validData);
+        ->post(route('posts.store'), $data);
 
     assertDatabaseHas(Post::class,[
-        ...$this->validData,
+        ...$data,
         'user_id'=>$user->id,
     ]);
 
@@ -37,18 +41,21 @@ it('can store a post', function () {
 
 it('redirects to post show page', function () {
     $user = User::factory()->create();
+    $data = value($this->validData);
 
     actingAs($user)
-        ->post(route('posts.store'), $this->validData)
+        ->post(route('posts.store'), $data)
         ->assertRedirect(Post::latest('id')->first()->showRoute());
 });
 
 it('requires valid data', function (array $badData, array|string $errors) {
 
     $user = User::factory()->create();
+    $data = value($this->validData);
+
 
     actingAs($user)
-        ->post(route('posts.store'), [...$this->validData, ...$badData])
+        ->post(route('posts.store'), [...$data, ...$badData])
         ->assertInvalid($errors);
 
 
@@ -59,6 +66,9 @@ it('requires valid data', function (array $badData, array|string $errors) {
     [['title'=> 3.5], 'title'],
     [['title'=> str_repeat('a',121)], 'title'],
     [['title'=> str_repeat('a',9)], 'title'],
+
+    [['topic_id'=> null], 'topic_id'],
+    [['topic_id'=> -1], 'topic_id'],
 
     [['body'=> null], 'body'],
     [['body'=> true], 'body'],

@@ -1,13 +1,39 @@
 <template>
     <AppLayout>
         <Container>
-            <ul class="divide-y">
-                <li v-for="post in posts.data" :key="post.id" >
+            <Link v-if="selectedTopic" :href="route('posts.index')" class="text-indigo-500 hover:text-indigo-700">Back to All Posts</Link>
+            <PageHeading v-text="selectedTopic ? selectedTopic.name : 'All Posts'"/>
+            <p v-if="selectedTopic" class="mt-1 text-gray-600 text-sm">{{selectedTopic.description}}</p>
+
+            <menu class="flex mt-3 space-x-1 overflow-x-auto pb-2 pt-1">
+                <li >
+                    <Pill
+                        :href="route('posts.index')"
+                        :filled="!selectedTopic"
+                    >
+                        All Posts
+                    </Pill>
+
+                </li>
+                <li v-for="topic in topics" :key="topic.id"  >
+                    <Pill
+                        :href="route('posts.index', {'topic': topic.slug})"
+                        :filled="topic.id === selectedTopic?.id"
+                    >
+                        {{topic.name}}
+                    </Pill>
+
+                </li>
+            </menu>
+            <ul class="divide-y mt-4">
+                <li v-for="post in posts.data" :key="post.id" class="flex justify-between items-baseline flex-col md:flex-row">
                     <Link :href="post.routes.show" class="group px-2 py-4 block">
                         <span class="font-bold text-lg group-hover:text-indigo-500">{{post.title}}</span>
                         <span class="text-sm text-gray-600 block mt-1">{{formattedDate(post)}} ago by {{post.user.name}}</span>
-
                     </Link>
+                    <Pill :href="route('posts.index', {'topic': post.topic.slug})">
+                        {{post.topic.name}}
+                    </Pill>
                 </li>
             </ul>
             <Pagination :meta="posts.meta" :only="['posts']"/>
@@ -23,12 +49,12 @@ import Container from "@/Components/Container.vue";
 
 import Pagination from "@/Components/Pagination.vue";
 import { Link } from "@inertiajs/vue3";
-import {computed} from "vue";
-import {formatDistance, parseISO} from "date-fns";
 import {relativeDate} from "@/Utilities/date.js";
+import PageHeading from "@/Components/PageHeading.vue";
+import Pill from "@/Components/Pill.vue";
 
 
-defineProps(['posts']);
+defineProps(['posts','topics', 'selectedTopic']);
 
 const formattedDate = (post) => relativeDate(post.created_at);
 

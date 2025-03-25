@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\TopicResource;
 use App\Models\Post;
+use App\Models\Topic;
+
+
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,11 +24,18 @@ class PostController extends Controller
         $this->authorizeResource(Post::class);
     }
 
-    public function index()
+    public function index(Topic $topic = null)
     {
         //
+        $posts = Post::with(['user','topic'])
+            ->when($topic, fn (Builder $query) => $query->whereBelongsTo($topic))
+            ->latest()
+            ->latest('id')
+            ->paginate();
         return inertia('Posts/Index', [
-            'posts' => PostResource::collection(Post::with('user')->latest()->latest('id')->paginate()),
+            'posts' => PostResource::collection($posts),
+            'topics' => fn () => TopicResource::collection(Topic::all()),
+            'selectedTopic' => fn () => $topic ? TopicResource::make($topic): null,
         ]);
 
     }
@@ -34,7 +46,9 @@ class PostController extends Controller
     public function create()
     {
         //
-        return inertia('Posts/Create',[]);
+        return inertia('Posts/Create',[
+            'topics' => fn () => TopicResource::collection(Topic::all()),
+        ]);
     }
 
     /**
@@ -45,6 +59,7 @@ class PostController extends Controller
         //
         $data = $request->validate([
             'title' => ['required', 'min:10', 'max:120'],
+            'topic_id' => ['required', 'exists:topics,id'],
             'body' => ['required', 'min:100', 'max:10000'],
         ]);
 
@@ -66,6 +81,7 @@ class PostController extends Controller
         if (! Str::contains($post->showRoute(), $request->path())) {
             return redirect($post->showRoute($request->query()), status: 301);
         }
+        $post->load('user', 'topic');
         return inertia('Posts/Show', [
             'post' => fn () =>  PostResource::make($post->load('user')),
             'comments' => fn () =>  CommentResource::collection($post->comments()->with('user')->latest()->latest('id')->paginate(10))

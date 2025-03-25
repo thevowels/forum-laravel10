@@ -40,7 +40,7 @@ class TestingServiceProvider extends ServiceProvider
         AssertableInertia::macro('hasPaginatedResource', function (string $key, ResourceCollection $resource) {
 
             //depricated
-            $this->hasResource("${key}.data", $resource);
+            $this->hasResource("{$key}.data", $resource);
             expect($this->prop($key))
                 ->toHaveKeys(['data', 'links', 'meta']);
 

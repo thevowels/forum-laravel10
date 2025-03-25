@@ -1,7 +1,12 @@
 <template>
     <AppLayout :title="post.title">
         <Container>
-            <h1 class="text-2xl font-bold">{{post.title}}</h1>
+            <Pill :href="route('posts.index', {topic: post.topic})">
+                {{post.topic.name}}
+            </Pill>
+            <PageHeading class="mt-2">
+                {{post.title}}
+            </PageHeading>
             <span class="text-sm text-gray-600 block mt-1">{{formattedDate}} ago by {{post.user.name}}</span>
             <article class="mt-6 prose prose-sm max-w-none" v-html="post.html">
             </article>
@@ -34,21 +39,20 @@
 <script setup>
 
 import AppLayout from "@/Layouts/AppLayout.vue";
-import {formatDistance, parseISO} from "date-fns"
 import {computed, ref} from "vue";
 import Container from "@/Components/Container.vue";
-import {Link, router, useForm} from "@inertiajs/vue3";
+import {router, useForm} from "@inertiajs/vue3";
 import {relativeDate} from "@/Utilities/date.js";
 import Pagination from "@/Components/Pagination.vue";
 import Comment from "@/Components/Comment.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextArea from "@/Components/TextArea.vue";
 import InputError from "@/Components/InputError.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import {useConfirm} from "@/Utilities/Composables/useConfirm.js";
 import MarkdownEditor from "@/Components/MarkdownEditor.vue";
+import PageHeading from "@/Components/PageHeading.vue";
+import Pill from "@/Components/Pill.vue";
 const formattedDate = computed(() => relativeDate(props.post.created_at))
 
 const props = defineProps(['post','comments']);

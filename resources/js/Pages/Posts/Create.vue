@@ -1,7 +1,7 @@
 <template>
     <AppLayout title="Create a Post">
         <Container>
-            <h1 class="text-2xl font-bold">Create a Post</h1>
+            <PageHeading>Create a Post</PageHeading>
 
             <form @submit.prevent="createPost" class="mt-6">
 
@@ -9,6 +9,14 @@
                     <InputLabel class="sr-only" for="title">Title</InputLabel>
                     <TextInput id="title" class="w-full" v-model="form.title" placeholder="Give it a great Title"/>
                     <InputError :message="form.errors.title" class="mt-1"/>
+                </div>
+
+                <div class="mt-3">
+                    <InputLabel  for="topic_id">Select a Topic</InputLabel>
+                    <select v-model="form.topic_id" class="w-full mt-1 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <option v-for="topic in topics" :key="topic" :value="topic.id">{{topic.name}}</option>
+                    </select>
+                    <InputError :message="form.errors.topic_id" class="mt-1"/>
                 </div>
 
                 <div class="mt-3">
@@ -56,10 +64,15 @@ import TextArea from "@/Components/TextArea.vue";
 import MarkdownEditor from "@/Components/MarkdownEditor.vue";
 import axios from "axios";
 import {isInProduction} from "@/Utilities/environment.js";
+import PageHeading from "@/Components/PageHeading.vue";
+
+
+const props = defineProps(['topics'])
 
 
 const form = useForm({
     title:'',
+    topic_id: props.topics[0].id,
     body:'',
 });
 
@@ -75,4 +88,5 @@ const autofill = async () => {
    form.title = response.data.title;
 
 };
+
 </script>
