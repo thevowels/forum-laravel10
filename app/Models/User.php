@@ -47,9 +47,6 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
 
     /**
      * The accessors to append to the model's array form.
@@ -59,6 +56,13 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function casts():array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+        ];
+    }
 
     public function posts(): hasMany
     {
