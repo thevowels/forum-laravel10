@@ -28,7 +28,7 @@ it('redirects to post showpage', function () {
 
     actingAs($comment->user)
         ->delete(route('comments.destroy', $comment))
-        ->assertRedirect(route('posts.show', $comment->post));
+        ->assertRedirect($comment->post->showRoute());
 
 });
 
@@ -61,7 +61,7 @@ it('redirects to post showpage with page qurey parameter', function () {
 
     actingAs($comment->user)
         ->delete(route('comments.destroy', ['comment' => $comment, 'page' => 3]))
-        ->assertRedirect(route('posts.show', ['post'=>$comment->post, 'page'=>3]));
+        ->assertRedirect($comment->post->showRoute(['page'=>3]));
 
 });
 

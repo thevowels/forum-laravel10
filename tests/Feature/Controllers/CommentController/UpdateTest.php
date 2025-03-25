@@ -31,7 +31,7 @@ it('redirects to post showpage', function () {
 
     actingAs($comment->user)
         ->put(route('comments.update', $comment), ['body'=> $newBody])
-        ->assertRedirect(route('posts.show', $comment->post));
+        ->assertRedirect($comment->post->showRoute());
 
 });
 
@@ -40,7 +40,7 @@ it('redirect to post with correct page of comments', function () {
     $newBody = 'This is new body.';
     actingAs($comment->user)
         ->put(route('comments.update', ['comment' => $comment, 'page'=>42]), ['body'=> $newBody])
-        ->assertRedirect(route('posts.show', ['post' => $comment->post, 'page' => 42]));
+        ->assertRedirect( $comment->post->showRoute(['page' => 42]));
 });
 
 it('cannnot update comment of other user', function () {

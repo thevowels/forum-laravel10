@@ -6,12 +6,19 @@ use App\Http\Resources\CommentResource;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        $this->authorizeResource(Post::class);
+    }
+
     public function index()
     {
         //
@@ -27,6 +34,7 @@ class PostController extends Controller
     public function create()
     {
         //
+        return inertia('Posts/Create',[]);
     }
 
     /**
@@ -35,14 +43,29 @@ class PostController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->validate([
+            'title' => ['required', 'min:10', 'max:120'],
+            'body' => ['required', 'min:100', 'max:10000'],
+        ]);
+
+        $post = Post::create([
+            ...$data,
+            'user_id' => $request->user()->id,
+            ]);
+
+
+        return redirect($post->showRoute());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show(Request $request, Post $post)
     {
         //
+        if (! Str::contains($post->showRoute(), $request->path())) {
+            return redirect($post->showRoute($request->query()), status: 301);
+        }
         return inertia('Posts/Show', [
             'post' => fn () =>  PostResource::make($post->load('user')),
             'comments' => fn () =>  CommentResource::collection($post->comments()->with('user')->latest()->latest('id')->paginate(10))
