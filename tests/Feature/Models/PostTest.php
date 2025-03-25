@@ -30,3 +30,12 @@ it('query parameters are passed by the showRoute in redirect', function () {
     get(route('posts.show', [$post, 'foo-bar', 'page'=>2]))
         ->assertRedirect($post->showRoute(['page'=>2]));
 });
+
+it('generates the html', function () {
+    $post = Post::factory()->make(['body'=> '## Hello World']);
+
+    $post->save();
+
+    expect($post->html)->toEqual(str($post->body)->markdown());
+
+});

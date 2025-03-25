@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(10)->create();
 
         $posts = Post::factory(200)
+                        ->withFixture()
                         ->has(Comment::factory(15)->recycle($users))
                         ->recycle($users)
                         ->create();
@@ -25,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $comments = Comment::factory(100)->recycle($users)->recycle($posts)->create();
 
         User::factory()
-            ->has(Post::factory(30))
+            ->has(Post::factory(30)->withFixture())
             ->has(Comment::factory(30)->recycle($posts))
             ->create([
                 'name' => 'APH',

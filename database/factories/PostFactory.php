@@ -4,8 +4,11 @@ namespace Database\Factories;
 
 // use App\Models\Post;
 use App\Models\User;
+use App\Support\PostFixtures;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
@@ -17,6 +20,7 @@ class PostFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
     public function definition(): array
     {
         return [
@@ -27,4 +31,12 @@ class PostFactory extends Factory
 
         ];
     }
+
+    public function withFixture(): static
+    {
+
+        return $this->sequence(...PostFixtures::getFixtures());
+
+    }
+
 }

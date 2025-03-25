@@ -3,10 +3,7 @@
         <Container>
             <h1 class="text-2xl font-bold">{{post.title}}</h1>
             <span class="text-sm text-gray-600 block mt-1">{{formattedDate}} ago by {{post.user.name}}</span>
-            <article class="mt-6">
-                <pre class="whitespace-pre-wrap font-sans">
-                    {{post.body}}
-                </pre>
+            <article class="mt-6 prose prose-sm max-w-none" v-html="post.html">
             </article>
             <div class="mt-12">
                 <h2 class="text-xl font-semibold">Comments</h2>
@@ -14,7 +11,7 @@
                 <form v-if="$page.props.auth.user" @submit.prevent="()=> commentIdBeingEdited ? updateComment(): addComment()" class="mt-4">
                     <div>
                         <InputLabel for="body" class="sr-only">Comment</InputLabel>
-                        <TextArea ref="commentTextAreaRef" rows="4" id = "body" v-model="commentForm.body"/>
+                        <MarkdownEditor ref="commentTextAreaRef" id="body" v-model="commentForm.body" placeholder="Speak your mind Spock…" editorClass="!min-h-[160px]"/>
                         <InputError :message="commentForm.errors.body" />
                     </div>
                     <PrimaryButton type="submit" class="mt-3" :disabled="commentForm.processing" v-text="commentIdBeingEdited ? 'Update Comment': 'Add Comment' "></PrimaryButton>
@@ -51,6 +48,7 @@ import TextArea from "@/Components/TextArea.vue";
 import InputError from "@/Components/InputError.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import {useConfirm} from "@/Utilities/Composables/useConfirm.js";
+import MarkdownEditor from "@/Components/MarkdownEditor.vue";
 const formattedDate = computed(() => relativeDate(props.post.created_at))
 
 const props = defineProps(['post','comments']);
