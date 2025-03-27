@@ -78,14 +78,19 @@ class PostController extends Controller
     public function show(Request $request, Post $post)
     {
         //
-        if (! Str::contains($post->showRoute(), $request->path())) {
+        if (! Str::endsWith($post->showRoute(), $request->path())) {
             return redirect($post->showRoute($request->query()), status: 301);
         }
         $post->load('user', 'topic');
-        return inertia('Posts/Show', [
-            'post' => fn () =>  PostResource::make($post->load('user')),
-            'comments' => fn () =>  CommentResource::collection($post->comments()->with('user')->latest()->latest('id')->paginate(10))
-        ]);
+        return inertia('Posts/Show', array(
+            'post' => fn () =>  PostResource::make($post)->withLikePermission(),
+            'comments' => function () use ($post) {
+                $commentResource =  CommentResource::collection($post->comments()->with('user')->latest()->latest('id')->paginate(10));
+
+                $commentResource->collection->transform(fn ($comment) =>  $comment->withLikePermission());
+                return $commentResource;
+            }
+        ));
     }
 
     /**

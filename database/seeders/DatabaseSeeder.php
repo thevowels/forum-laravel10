@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -34,6 +35,9 @@ class DatabaseSeeder extends Seeder
         User::factory()
             ->has(Post::factory(30)->recycle($topics)->withFixture())
             ->has(Comment::factory(30)->recycle($posts))
+            ->has(Like::factory()->forEachSequence(
+                ...$posts->random(100)->map(fn (Post $post) => ['likeable_id' => $post]),
+            ))
             ->create([
                 'name' => 'APH',
                 'email' => 'test@example.com',

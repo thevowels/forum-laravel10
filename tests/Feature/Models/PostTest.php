@@ -18,11 +18,16 @@ it('can generate a route to show page', function () {
 });
 
 
-it('redirect if sulg is incorerct', function () {
+it('redirect if sulg is incorerct', function ($badSlug) {
     $post = Post::factory()->create(['title' => 'Hello, how are you?']);
-    get(route('posts.show', [$post, 'foo-bar']))
+    get(route('posts.show', [$post, $badSlug]))
         ->assertRedirect($post->showRoute());
-});
+})->with([
+    'foo-bar',
+    'hello'
+]);
+
+
 
 it('query parameters are passed by the showRoute in redirect', function () {
     $post = Post::factory()->create(['title' => 'Hello, how are you?']);
